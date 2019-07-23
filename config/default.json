@@ -1,0 +1,6 @@
+{
+  "mongoURI": "mongodb+srv://jamesd:jamesd@mt-oszax.mongodb.net/comicwox?retryWrites=true",
+  "jwtSecret": "sl_myJwtSecret"
+}
+
+
