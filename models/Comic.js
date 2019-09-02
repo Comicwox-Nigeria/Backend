@@ -84,4 +84,9 @@ const ComicSchema = new Schema({
 
 });
 
+
+ComicSchema.index({
+    comicTitle: 'text'
+});
+
 module.exports = Comic = mongoose.model('comics', ComicSchema);

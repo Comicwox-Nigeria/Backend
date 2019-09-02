@@ -102,6 +102,7 @@ app.use('/api/staffRoutes/staffManageComic', staffManageComic);
 app.use('/api/staffRoutes/staffManagerReaders', staffManagerReaders);
 app.use('/api/staffRoutes/staffManagerStudios', staffManagerStudios);
 
+
 //FOR STUDIO
 app.use('/api/studioRoutes/authentication', studioAuth);
 app.use('/api/studioRoutes/studioDashboard', studioDashboard);
@@ -127,7 +128,7 @@ app.use('/api/comicRoutes/studio', studio);
 
 }*/
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8081;
 // const port = 5211;
 
 app.listen(port, () => console.log(`Server running on port ${port}`));

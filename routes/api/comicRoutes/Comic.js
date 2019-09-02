@@ -91,34 +91,27 @@ router.get('/newComics', (req, res) => {
 // @access Public
 
 router.get('/getAllComics', (req, res) => {
-    Comic.find({ comicChapter: 1 }).then(comic => res.json(comic));
+    Comic.find({ comicChapter: 1 })
+        .collation({locale: 'en'})
+        .sort({comicTitle:1})
+        .then(comic => res.json(comic));
 });
 
 // @desc GET Get Searched COMIC (Chapter 1)
 // @access Public
 
 router.get('/getSearchedComic/:comicTitle', (req, res) => {
-    let cTitle = req.query.comicTitle;
 
-    Comic.find({ comicTitle: cTitle }, function (err, comic) {
-        if (err) {
-            res.json({success: false, message: err});
-        } else {
-            if (!comic) {
-                res.json({success: false, message: 'No Comic was found'});
+    let searchQuery = req.params.comicTitle;
+
+   Comic.find({comicChapter: 1, comicTitle: {$regex: new RegExp(searchQuery)}})
+       .then(comics => {
+            if (comics.length > 0) {
+                res.status(200).json(comics)
+            } else {
+                return res.status(400).json({msg: 'Comic search not found'})
             }
-            else {
-                if (comic.length === 0) {
-                    res.json({success: false, message: 'No Comic was found'});
-                }
-                else {
-                    res.json({success: true, listOfComics: comic});
-                }
-
-            }
-        }
-    })
-
+       });
 });
 
 /*
@@ -306,28 +299,15 @@ router.post('/addCommentUnderComicAndChapter/:id', authReader, (req, res) => {
 // @desc POST Add To Views Under Comic And Chapter Using ID of Comic
 // @access Private
 
-router.post('/addViews/:id/:username', authReader, (req, res) => {
+router.post('/addViews/:id', (req, res) => {
     Comic.findOne({ _id: req.params.id, comicChapter: 1 }).then(comic => {
         if (comic) {
-            Reader.findOne({username: req.params.username }).then(reader => {
-                if (reader) {
 
-                    if (comic.views.filter(view => view['username'] === req.params.username).length > 0) {
-                        return res.json({ alreadyFavorite: 'You have already viewed this' });
-                    }
-                    // let newFave = [...reader.favorite];
-                    // newFave.push(comic);
+            comic.viewsCount += 1;
 
-                    comic.views.unshift({ username: reader.username });
-                    comic.viewsCount += 1;
+            comic.save().then(comic => res.json(comic));
 
-                    comic.save().then(comic => res.json(comic));
-
-                }   else {
-                    res.json({ error: 'User does not exist' })
-                }
-            })
-        } else {
+        }   else {
             res.json({ error: 'Comic does not exist' })
         }
     });
