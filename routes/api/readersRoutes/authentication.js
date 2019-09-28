@@ -115,14 +115,17 @@ router.post('/login', (req, res) => {
     Reader.findOne({ email: email })
         .then(reader => {
             if (!reader) {
-                errors.email = 'Wrong Email Or Password';
+                errors.email = 'Email does not exists';
                 return res.status(404).json(errors)
             }
 
             //Validate password
 
             bcrypt.compare(password, reader.password).then(isMatch => {
-                if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+                if (!isMatch) {
+                    errors.password = 'An incorrect Password was entered';
+                    return res.status(404).json(errors)
+                }
 
 
                 const payload = {
